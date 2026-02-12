@@ -1,40 +1,33 @@
+.idea/
+.vscode/
+
 # Python
 __pycache__/
 *.py[cod]
 *.pyd
 *.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
 *.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual environments
+build/
+dist/
 .venv/
 venv/
-ENV/
+.env
 
-# Jupyter
-.ipynb_checkpoints/
-
-# Logs & outputs
-*.log
-output/
-outputs/
+# Training artifacts / outputs
 checkpoints/
 logs/
+lightning_logs/
+samples/
+models/
+trajectory_data*/
+sampling_results*/
 
-# OS
-.DS_Store
-Thumbs.db
+# Datasets / embeddings (generated locally)
+data/
+datasets/
+embeddings/
 
+# Paper / private notes (keep out of public repo)
+Representation_Guided_Discrete_Molecular_Graph_Retrosynthesis/
+Done/
+合并说明.md

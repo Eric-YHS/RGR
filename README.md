@@ -1,11 +1,62 @@
-# RGR
+# RGR: Representation-Guided Discrete Molecular Graph Retrosynthesis
 
-本仓库用于存放 RGR 相关的实验代码与复现实验的脚本/配置。
+本仓库整理并开源了论文《Representation Guided Discrete Molecular Graph Retrosynthesis》中**图级对齐（graph-level alignment）**相关的训练与采样代码（论文仍处于评审阶段）。
 
-## Quick start
+核心做法：在离散分子图生成模型训练过程中，对中间层的全局 token 表征施加一个**余弦对齐损失**，将其对齐到外部“teacher”图级表征（本仓库提供一个可复现的 teacher 生成脚本）。
 
-1. 克隆仓库
-2. 按需添加代码与配置
+## 环境
 
-> 备注：后续将补充更完整的项目结构与运行说明。
+建议使用 Python 3.9 + conda-forge RDKit：
 
+```bash
+conda create -n rgr python=3.9 rdkit=2023.09.5 -c conda-forge -y
+conda activate rgr
+pip install -r requirements.txt
+```
+
+## 数据（USPTO-50K）
+
+默认数据目录为 `data/uspto50k/`。首次运行训练/脚本时，会自动下载 USPTO-50K 的 split CSV 到 `data/uspto50k/raw/`。
+
+## 生成对齐用 teacher embeddings
+
+训练图级对齐前，需要先生成 teacher embeddings（并在训练时自动进行 PCA(whiten)+L2 缓存为 64 维对齐目标）：
+
+```bash
+python scripts/build_alignment_embeddings.py \
+  --data_root data/uspto50k \
+  --out_dir embeddings \
+  --fp morgan \
+  --radius 2 \
+  --n_bits 512
+```
+
+该脚本会为 train/val/test 生成并保存 product/reactants 的图级 embedding（`.pt`），供训练时读取。
+
+## 训练
+
+```bash
+python train.py --config configs/rgr.yaml --model RGR
+```
+
+默认产物目录：
+- checkpoints：`checkpoints/<run_name>/...`
+- logs：`logs/{chains,graphs,lightning_logs}/<run_name>/...`
+
+## 采样
+
+```bash
+python sample.py \
+  --config configs/rgr.yaml \
+  --checkpoint <path/to/ckpt> \
+  --samples samples \
+  --model RGR \
+  --mode test \
+  --n_samples 10 \
+  --n_steps 500 \
+  --sampling_seed 1
+```
+
+## 许可证
+
+见 `LICENSE.txt`（CC BY-NC 4.0）。
