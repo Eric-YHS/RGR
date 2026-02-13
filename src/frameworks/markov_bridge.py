@@ -421,11 +421,9 @@ class MarkovBridge(pl.LightningModule):
         self.sampling_metrics.reset()
 
     def validation_step(self, data, i):
-        # 获取中间层输出用于对齐损失统计
         reactants, product, pred, node_mask, noisy_data, context, intermediate_outputs = self.process_and_forward(
             data, return_intermediate_outputs=True)
 
-        # 记录验证阶段的对齐损失（不影响验证主损失与监控）
         try:
             if intermediate_outputs and 'layer_2_y' in intermediate_outputs and 'layer_4_y' in intermediate_outputs:
                 batch_indices = data.idx
@@ -443,7 +441,6 @@ class MarkovBridge(pl.LightningModule):
                     self.log('val_alignment/total_loss', total_alignment_loss.detach())
                     self.log('val_alignment/weight_w', w)
         except Exception as e:
-            # 避免由于embedding索引或尺寸问题导致验证失败，仅打印告警
             print(f"Warning: could not compute validation alignment loss: {e}")
 
         if self.loss_type == 'vlb':
@@ -458,16 +455,10 @@ class MarkovBridge(pl.LightningModule):
             return self.compute_validation_CE_loss(reactants=reactants, pred=pred, i=i)
 
     def on_validation_epoch_end(self):
-        # 由于 Trainer 的 check_val_every_n_epoch 已经设置为10，
-        # 这个方法本身就是每10个epoch才会被调用一次。
-        # 因此，我们不再需要内部计数器，直接执行采样即可。
-
         print(f"Validation end at Epoch {self.current_epoch}: Performing sampling and metric calculation...")
         
-        # 直接调用 sample()
         self.sample()
         
-        # 保存 last.ckpt 检查点
         self.trainer.save_checkpoint(os.path.join(self.checkpoints_dir, 'last.ckpt'))
 
     def save_accuracy_checkpoints(self):
@@ -563,19 +554,10 @@ class MarkovBridge(pl.LightningModule):
             atom_decoder=self.dataset_info.atom_decoder,
             grouped_scores=grouped_scores,
         )
-        # ==================== 开始修改 ====================
-        # 重命名指标的键，以匹配 train.py 中 ModelCheckpoint 的要求
-        # 注意: 'Top-1 accuracy' 是一个常见的名称，如果你的代码实际返回的键不同，请相应修改。
-        # 你可以通过在此处添加 print(to_log.keys()) 来查看确切的键名。
-
-        print("Metrics from compute_retrosynthesis_metrics:",
-              to_log.keys())  # 添加这行来调试
-
         if 'Top-1 accuracy' in to_log:
             to_log['top_1_accuracy'] = to_log.pop('Top-1 accuracy')
         if 'Top-5 accuracy' in to_log:
             to_log['top_5_accuracy'] = to_log.pop('Top-5 accuracy')
-        # ==================== 结束修改 ====================
         for metric_name, metric in to_log.items():
             self.log(metric_name, metric)
 

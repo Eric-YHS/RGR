@@ -5,7 +5,6 @@ import torch
 
 from datetime import datetime
 
-# 优化Tensor Core性能
 torch.set_float32_matmul_precision('medium')
 
 from src.utils import disable_rdkit_logging, parse_yaml_config, set_deterministic

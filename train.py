@@ -16,7 +16,6 @@ import torch
 
 from datetime import datetime
 
-# 优化Tensor Core性能
 torch.set_float32_matmul_precision('medium')
 
 
@@ -178,7 +177,6 @@ def main(args):
     os.makedirs(top_1_checkpoints_dir, exist_ok=True)
     os.makedirs(top_5_checkpoints_dir, exist_ok=True)
 
-    # 只使用基于准确率的自动保存，移除基于验证损失的保存
     checkpoint_callbacks = [
         callbacks.ModelCheckpoint(
             dirpath=top_1_checkpoints_dir,
