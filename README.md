@@ -1,4 +1,4 @@
-# RGR: Representation-Guided Discrete Molecular Graph Retrosynthesis
+# RGR
 
 本仓库整理并开源了 RGR 实例化相关的训练与采样代码。
 
