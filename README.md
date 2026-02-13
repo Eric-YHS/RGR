@@ -1,6 +1,6 @@
 # RGR: Representation-Guided Discrete Molecular Graph Retrosynthesis
 
-本仓库整理并开源了论文《Representation Guided Discrete Molecular Graph Retrosynthesis》中**图级对齐（graph-level alignment）**相关的训练与采样代码（论文仍处于评审阶段）。
+本仓库整理并开源了 RGR 实例化相关的训练与采样代码。
 
 核心做法：在离散分子图生成模型训练过程中，对中间层的全局 token 表征施加一个**余弦对齐损失**，将其对齐到外部“teacher”图级表征（本仓库提供一个可复现的 teacher 生成脚本）。
 
