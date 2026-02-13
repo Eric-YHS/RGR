@@ -1,10 +1,10 @@
 # RGR
 
-本仓库整理并开源了 RGR 实例化相关的训练与采样代码。
+This repository contains training and sampling code for the RGR instantiation.
 
-## 环境
+## Environment
 
-建议使用 Python 3.9 + conda-forge RDKit：
+Recommended: Python 3.9 + conda-forge RDKit.
 
 ```bash
 conda create -n rgr python=3.9 rdkit=2023.09.5 -c conda-forge -y
@@ -12,13 +12,15 @@ conda activate rgr
 pip install -r requirements.txt
 ```
 
-## 数据（USPTO-50K）
+## Data (USPTO-50K)
 
-默认数据目录为 `data/uspto50k/`。首次运行训练/脚本时，会自动下载 USPTO-50K 的 split CSV 到 `data/uspto50k/raw/`。
+Default dataset root: `data/uspto50k/`.
 
-## 生成对齐用 teacher embeddings
+On the first run, USPTO-50K split CSV files will be downloaded to `data/uspto50k/raw/` automatically.
 
-训练图级对齐前，需要先生成 teacher embeddings（并在训练时自动进行 PCA(whiten)+L2 缓存为 64 维对齐目标）：
+## Build teacher embeddings
+
+Before training, generate teacher embeddings (saved as `.pt` files under `embeddings/`):
 
 ```bash
 python scripts/build_alignment_embeddings.py \
@@ -29,19 +31,17 @@ python scripts/build_alignment_embeddings.py \
   --n_bits 512
 ```
 
-该脚本会为 train/val/test 生成并保存 product/reactants 的图级 embedding（`.pt`），供训练时读取。
-
-## 训练
+## Training
 
 ```bash
 python train.py --config configs/rgr.yaml --model RGR
 ```
 
-默认产物目录：
-- checkpoints：`checkpoints/<run_name>/...`
-- logs：`logs/{chains,graphs,lightning_logs}/<run_name>/...`
+Outputs:
+- checkpoints: `checkpoints/<run_name>/...`
+- logs: `logs/{chains,graphs,lightning_logs}/<run_name>/...`
 
-## 采样
+## Sampling
 
 ```bash
 python sample.py \
@@ -55,6 +55,6 @@ python sample.py \
   --sampling_seed 1
 ```
 
-## 许可证
+## License
 
-见 `LICENSE.txt`（CC BY-NC 4.0）。
+See `LICENSE.txt` (CC BY-NC 4.0).
